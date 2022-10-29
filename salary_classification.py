@@ -32,11 +32,17 @@ def remove_null_values(df):
         df.dropna(inplace=True)
     return df
 
-    
+def remove_duplicates(df):
+    duplicate_values = df.duplicated().sum()
+    if (duplicate_values > 0):
+        print("Duplicate data was found. Removing duplicate data...")
+        df.drop_duplicates(keep='first',inplace=True)
+    return df
+
 def main():
     df = pd.read_csv("salary.csv")
     remove_null_values(df)
-    print(df.isnull().sum())
+    remove_duplicates(df)
 
 if __name__ == "__main__":
     main()
