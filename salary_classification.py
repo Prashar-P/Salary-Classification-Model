@@ -22,3 +22,21 @@ def data_preprocessing(df):
 """
 def train_data():
     print("training")
+
+def remove_null_values(df):
+    #set  ? to be null values
+    df.replace(" ?", pd.NA, inplace=True)
+    null_values = df.isnull()
+    if (null_values.sum().sum()) > 0:
+        print("Null Values are present... removing relevant data samples")
+        df.dropna(inplace=True)
+    return df
+
+    
+def main():
+    df = pd.read_csv("salary.csv")
+    remove_null_values(df)
+    print(df.isnull().sum())
+
+if __name__ == "__main__":
+    main()
