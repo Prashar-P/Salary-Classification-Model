@@ -22,7 +22,8 @@ def train_model(df):
         X, y, test_size=0.2, random_state=0
     )
 
-    k_nearest_algorithm(X_train, y_train, X_test, y_test)
+    model = k_nearest_algorithm(X_train, y_train, X_test, y_test)
+    plot_confusion_matrix(X_test, y_test, model)
 
 
 def k_nearest_algorithm(X_train, y_train, X_test, y_test):
@@ -38,3 +39,13 @@ def k_nearest_algorithm(X_train, y_train, X_test, y_test):
     return knn
 
 
+def plot_confusion_matrix(X_test, y_test, model):
+    """
+    Converts all categorical data to numerical
+    """
+    from sklearn.metrics import confusion_matrix
+    from sklearn.metrics import plot_confusion_matrix
+
+    y_pred = model.predict(X_test)
+    confusion_matrix(y_test, y_pred)
+    plot_confusion_matrix(model, X_test, y_test, cmap="Blues")
