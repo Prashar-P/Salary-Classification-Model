@@ -1,16 +1,16 @@
 import pandas as pd
 import numpy as np
-import matplotlib as plt
+import matplotlib.pyplot as plt
 import seaborn as sns
 
 
 def check_data(df):
-    # print(df.shape)
-    # print(df.info())
-    # print(df.describe())
-    # print(df.nunique())
-    # print(df.isnull().sum())
-    # print(df.duplicated().sum())
+    print(df.shape)
+    print(df.info())
+    print(df.describe())
+    print(df.nunique())
+    print(df.isnull().sum())
+    print(df.duplicated().sum())
     print(df.head(30))
 
 
@@ -25,13 +25,13 @@ def data_preprocessing(df):
     - handling of outliers
     """
     print("PRE-PROCESSING")
-    check_data(df)
+    # check_data(df)
     remove_spaces(df)
     remove_null_values(df)
     remove_duplicates(df)
     convert_categorical_to_numerical(df)
     # plt_data(df)
-    handle_outliers(df)
+    # handle_outliers(df)
     feature_scaling(df)
     # print(df.head(30))
 
