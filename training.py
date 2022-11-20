@@ -25,6 +25,10 @@ def train_model(df):
         X, y, test_size=0.2, random_state=0
     )
     
+    
+    # model = k_nearest_algorithm(X_train, y_train, X_test, y_test)
+    # plot_confusion_matrix(X_test, y_test, model,"Confusion Matrix for KNN")
+
     fig, axs = plt.subplots(figsize=(30,5),ncols=4)
     
     standardize_using_scalar(X_train,X_test)
@@ -47,27 +51,27 @@ def train_model(df):
     model = k_nearest_algorithm(X_train, y_train, X_test, y_test)
     plot_confusion_matrix(X_test, y_test, model,"Normalizer", axs,3)
 
-    fig, axs = plt.subplots(figsize=(30,5),ncols=4)
+    # fig, axs = plt.subplots(figsize=(30,5),ncols=4)
     
-    standardize_using_scalar(X_train,X_test)
-    print("Logistic Regression using scalar accuracy:")
-    model = Logistic_Regression(X,X_train, y_train, X_test, y_test)
-    plot_confusion_matrix(X_test, y_test, model,"Standard Scalar",axs,0)
+    # standardize_using_scalar(X_train,X_test)
+    # print("Logistic Regression using scalar accuracy:")
+    # model = Logistic_Regression(X,X_train, y_train, X_test, y_test)
+    # plot_confusion_matrix(X_test, y_test, model,"Standard Scalar",axs,0)
 
-    standardize_using_robust(X_train,X_test)
-    print("Logistic Regression using robust accuracy:")
-    model = Logistic_Regression(X,X_train, y_train, X_test, y_test)
-    plot_confusion_matrix(X_test, y_test, model,"Robust Scalar", axs,1)
+    # standardize_using_robust(X_train,X_test)
+    # print("Logistic Regression using robust accuracy:")
+    # model = Logistic_Regression(X,X_train, y_train, X_test, y_test)
+    # plot_confusion_matrix(X_test, y_test, model,"Robust Scalar", axs,1)
 
-    standardize_using_minmax(X_train,X_test)
-    print("Logistic Regression standardize using minmax accuracy:")
-    model = Logistic_Regression(X,X_train, y_train, X_test, y_test)
-    plot_confusion_matrix(X_test, y_test, model,"MinMax Scalar",axs,2)
+    # standardize_using_minmax(X_train,X_test)
+    # print("Logistic Regression standardize using minmax accuracy:")
+    # model = Logistic_Regression(X,X_train, y_train, X_test, y_test)
+    # plot_confusion_matrix(X_test, y_test, model,"MinMax Scalar",axs,2)
 
-    standardize_using_normalizer(X_train,X_test)
-    print("Logistic Regression using normalizer accuracy:")
-    model = Logistic_Regression(X,X_train, y_train, X_test, y_test)
-    plot_confusion_matrix(X_test, y_test, model,"Normalizer", axs,3)
+    # standardize_using_normalizer(X_train,X_test)
+    # print("Logistic Regression using normalizer accuracy:")
+    # model = Logistic_Regression(X,X_train, y_train, X_test, y_test)
+    # plot_confusion_matrix(X_test, y_test, model,"Normalizer", axs,3)
 
 
 
@@ -76,17 +80,41 @@ def k_nearest_algorithm(X_train, y_train, X_test, y_test):
     Converts all categorical data to numerical
     """   
     from sklearn.neighbors import KNeighborsClassifier
-    knn = KNeighborsClassifier()
+    neighbours = find_best_num_of_neighbours(X_train, y_train, X_test, y_test)
+    knn = KNeighborsClassifier(n_neighbors=1)
     knn.fit(X_train, y_train)
-    print(knn.score(X_train, y_train))
+    y_pred = knn.predict(X_test)
+    print("accuracy:",knn.score(X_train, y_train))
+    target = ["<50k",">50k"]
+    print(classification_report(y_test , y_pred,target_names=target))
     return knn
+
+def find_best_num_of_neighbours(X_train, y_train, X_test, y_test):
+    error_rate = []
+    for i in range(1,30):
+        from sklearn.neighbors import KNeighborsClassifier
+        knn = KNeighborsClassifier(n_neighbors=i)
+        knn.fit(X_train,y_train)
+        y_pred = knn.predict(X_test)
+        error_rate.append(np.mean(y_pred != y_test))
     
+    # plt.figure(figsize=(20,10))
+    # plt.plot(range(1,30),error_rate,linestyle='dashed',marker='o',markerfacecolor='red')
+    # plt.title('Error Rate vs. K Value')
+    # plt.xlabel('K')
+    # plt.ylabel('Error Rate')
+
+    req_k_value = error_rate.index(min(error_rate))+1
+    print("Minimum error:-",min(error_rate),"at K =",req_k_value)
+    return req_k_value
+
+
 def Logistic_Regression(X,X_train, y_train, X_test, y_test):
     """
     Converts all categorical data to numerical
     """   
     from sklearn.linear_model import LogisticRegression
-    logistic = LogisticRegression()
+    logistic = LogisticRegression(max_iter=100)
     logistic.fit(X_train, y_train)
     return logistic
 
@@ -105,7 +133,6 @@ def plot_confusion_matrix(X_test, y_test, model, scalar, axs,axis):
     cm_plt.xaxis.set_ticklabels(['True','False'])
     cm_plt.yaxis.set_ticklabels(['Negative','Posotive'])
     
-    print(classification_report(y_test , y_pred))
     
 
 def standardize_using_scalar(X_train,X_test):
@@ -131,3 +158,8 @@ def standardize_using_normalizer(X_train,X_test):
     X_train = normalizer.fit_transform(X_train)
     X_train = normalizer.transform(X_test)
     return X_train
+
+# def cross_validation():
+#     scores = cross_val_score(, X, y, cv=4, scoring="accuracy")
+#     print("Scores: ", scores)
+#     print("Average model accuracy: {:.3f}".format(scores.mean()))
