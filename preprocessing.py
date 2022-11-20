@@ -27,12 +27,13 @@ def data_preprocessing(df):
     print("PRE-PROCESSING")
     # check_data(df)
     remove_spaces(df)
+    feature_selection(df)
     remove_null_values(df)
     remove_duplicates(df)
     convert_categorical_to_numerical(df)
     # plt_data(df)
-    # handle_outliers(df)
-    feature_scaling(df)
+    handle_outliers(df)
+    
     # print(df.head(30))
 
 
@@ -102,23 +103,32 @@ def handle_outliers(df):
     return df
 
 
-def feature_scaling(df):
-    from sklearn.preprocessing import StandardScaler
-
-    scaler = StandardScaler()
-    scaler.fit(df)
+def feature_selection(df):
+        
+    df.drop(['fnlwgt', 'marital-status', 'relationship'], axis=1, inplace=True)
     return df
+
 
 
 def plt_data(df):
     """
     Plot data for comparisons as a boxplot/scatter and heatmap
     """
-    print("plotdata")
-    plt.pyplot.figure(figsize=(20, 15))
-    sns.boxplot(data=df, y="age", x="salary")
-    sns.catplot(
-        data=df, y="occupation", hue="salary", kind="count", palette="pastel"
-    )
-    plt.pyplot.figure(figsize=(15, 10))
+    #https://stackoverflow.com/questions/61526812/boxplot-for-all-data-in-dataframe-error-numpy-ndarray-object-has-no-attribut
+
+    columns = list(df.columns)
+    print(len(columns)/5)
+    f, axs = plt.subplots(round(len(columns)/6), 6, figsize=(20,15))
+    f.suptitle("salary: 0 = <50k , 1 = >50k")
+    a = 0
+    for col in columns:    
+        i, j = divmod(a, 6)
+        sns.boxplot(data=df, y=col, x="salary", ax=axs[i,j]).set_title(("Outliers in category " + col))
+        a = a + 1
+    plt.tight_layout()
+
+        # sns.boxplot(data=df, y=col, x="salary").set_title("Outliers in the age category")
+    sns.catplot(data=df, y="occupation", hue="salary", kind="count", palette="pastel")
+    plt.figure(figsize=(15, 10))
     sns.heatmap(df.corr(), annot=True)
+    plt.title('Correlation matrix for salary predictions')

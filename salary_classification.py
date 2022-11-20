@@ -3,7 +3,7 @@
 #%%
 import pandas as pd
 import numpy as np
-import matplotlib as plt
+import matplotlib.pyplot as plt
 import seaborn as sns
 
 import preprocessing
@@ -15,7 +15,6 @@ def main():
     # preprocessing.check_data(df)
     preprocessing.data_preprocessing(df)
     training.train_model(df)
-
 
 if __name__ == "__main__":
     main()
