@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-def check_data(df):
+def data_analysis(df):
     print(df.shape)
     print(df.info())
     print(df.describe())
@@ -104,7 +104,9 @@ def handle_outliers(df):
 
 
 def feature_selection(df):
-        
+    """
+    Plot data for comparisons as a boxplot/scatter and heatmap
+    """
     df.drop(['fnlwgt', 'marital-status', 'relationship'], axis=1, inplace=True)
     return df
 
