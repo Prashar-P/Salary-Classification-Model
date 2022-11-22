@@ -33,7 +33,7 @@ def data_preprocessing(df):
     convert_categorical_to_numerical(df)
     # plt_data(df)
     handle_outliers(df)
-    
+    # print(df.value_counts())
     # print(df.head(30))
 
 
@@ -82,6 +82,7 @@ def convert_categorical_to_numerical(df):
     """
     Converts all categorical data to numerical
     """
+    # <=50K = 0 >=50K = 1
     from sklearn import preprocessing
 
     le = preprocessing.LabelEncoder()
@@ -134,3 +135,5 @@ def plt_data(df):
     plt.figure(figsize=(15, 10))
     sns.heatmap(df.corr(), annot=True)
     plt.title('Correlation matrix for salary predictions')
+
+ 

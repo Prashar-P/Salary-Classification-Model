@@ -10,6 +10,9 @@ from sklearn.datasets import make_classification
 from sklearn.model_selection import cross_val_score
 from imblearn.over_sampling import RandomOverSampler
 from imblearn.under_sampling import RandomUnderSampler
+from collections import Counter
+from sklearn.datasets import make_classification
+from imblearn.over_sampling import SMOTE 
 import preprocessing
 
 
@@ -21,8 +24,8 @@ def standardize_using_scalar(X_train,X_test):
     """
     standard_scaler = StandardScaler()
     X_train = standard_scaler.fit_transform(X_train)
-    X_train = standard_scaler.transform(X_test)
-    return X_train
+    X_test = standard_scaler.transform(X_test)
+    return X_train, X_test
 
 def standardize_using_robust(X_train,X_test):
     """
@@ -30,17 +33,16 @@ def standardize_using_robust(X_train,X_test):
     """ 
     robust_scaler = RobustScaler()
     X_train = robust_scaler.fit_transform(X_train)
-    X_train = robust_scaler.transform(X_test)
-    return X_train
+    X_test = robust_scaler.transform(X_test)
+    return X_train, X_test
+    
 
 def standardize_using_minmax(X_train,X_test):
-    """
-    Trains  data in order to make predictions based on the data provided.
-    """
     minmax_scaler = MinMaxScaler()
     X_train = minmax_scaler.fit_transform(X_train)
     X_test= minmax_scaler.transform(X_test)
-    return X_train
+    return X_train, X_test
+    
 
 def standardize_using_normalizer(X_train,X_test):
     """
@@ -48,31 +50,53 @@ def standardize_using_normalizer(X_train,X_test):
     """
     normalizer = Normalizer()
     X_train = normalizer.fit_transform(X_train)
-    X_train = normalizer.transform(X_test)
-    return X_train
+    X_test = normalizer.transform(X_test)
+    return X_train, X_test
 
 # Under and Oversampling
+
+def check_imbalance(df):
+    """
+    Trains  data in order to make predictions based on the data provided.
+    """
+    sal_imbalance = df['salary'].value_counts().plot(kind='bar')
+    sal_imbalance.set_title('Frequency of salary data \n salary: 0:<=50k , 1:>=50k')
+    sal_imbalance.set_xlabel('Frequency')
+    sal_imbalance.set_ylabel('Salary')
 
 def oversampling(X,y):
     """
     Trains  data in order to make predictions based on the data provided.
     """
-    X, y = make_classification(n_samples=32561, n_features=15, n_informative=12,
-                           weights= None )
+    X, y = make_classification(n_samples=32561, n_features=15, n_informative=2,
+                           weights= [10] )
     ros = RandomOverSampler()
     ros.fit(X, y)
-    X_ros, y_ros = ros.fit_resample(X, y)
+    X, y = ros.fit_resample(X, y)
+    print('Resampled dataset shape %s' % Counter(y))  
+    return X,y
 
 
 def undersampling(X,y):
     """
     Trains  data in order to make predictions based on the data provided.
     """
-    X, y = make_classification(n_samples=32561, n_features=15, n_informative=12,
-                        weights= None )
+    X, y = make_classification(n_samples=32561, n_features=15, n_informative=2,
+                        weights=  [10] )
     rus = RandomOverSampler()
     rus.fit(X, y)
-    X_rus, y_rus = rus.fit_resample(X, y)
+    X, y = rus.fit_resample(X, y)
+    print('Resampled dataset shape %s' % Counter(y))  
+    return X,y
+
+def fix_imbalanced_data_with_smote(X,y):
+    """
+    Trains  data in order to make predictions based on the data provided.
+    """
+    sm = SMOTE(random_state=42)
+    X, y = sm.fit_resample(X, y)
+    print('Resampled dataset shape %s' % Counter(y))  
+    return X,y
 
 
 def find_best_num_of_neighbours(X_train, y_train, X_test, y_test):
