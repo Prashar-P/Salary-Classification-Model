@@ -7,6 +7,7 @@ import sklearn
 from sklearn.preprocessing import MinMaxScaler, Normalizer, StandardScaler, RobustScaler
 from sklearn.metrics import classification_report
 from sklearn.datasets import make_classification
+from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import cross_val_score
 from imblearn.over_sampling import RandomOverSampler
 from imblearn.under_sampling import RandomUnderSampler
@@ -97,6 +98,19 @@ def fix_imbalanced_data_with_smote(X,y):
     X, y = sm.fit_resample(X, y)
     print('Resampled dataset shape %s' % Counter(y))  
     return X,y
+
+def GridSearch(model,X_train,y_train,X_test,y_test,params):
+    grid=GridSearchCV(model,params,verbose=3)
+    grid.fit(X_train,y_train)
+    new_model = grid.best_estimator_
+    new_model.fit(X_train,y_train)
+    y_pred = new_model.predict(X_test)
+    cm = training.confusion_matrix(y_test, y_pred)
+    
+    cm_plt =  sns.heatmap(cm/np.sum(cm), fmt='.2%', annot=True, cmap='Blues')
+    cm_plt.set_title('Confusion Matrix using Grid Search' )
+    cm_plt.xaxis.set_ticklabels(['True','False'])
+    cm_plt.yaxis.set_ticklabels(['Negative','Posotive'])
 
 
 def find_best_num_of_neighbours(X_train, y_train, X_test, y_test):

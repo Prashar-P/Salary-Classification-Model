@@ -32,7 +32,7 @@ def train_model(df):
     #model_tuning.check_imbalance(df)
     # X, y = model_tuning.fix_imbalanced_data_with_smote(X,y)
     # X, y = model_tuning.oversampling(X,y)
-    # X, y =model_tuning.undersampling(X,y)
+    # X, y = model_tuning.undersampling(X,y)
 
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=0
@@ -61,7 +61,7 @@ def train_model(df):
 
     fig, axs = plt.subplots(figsize=(30,5),ncols=4)
     
-    # X_train, X_test = model_tuning.standardize_using_scalar(X_train,X_test)
+    X_train, X_test = model_tuning.standardize_using_scalar(X_train,X_test)
     print("Logistic Regression using scalar accuracy:")
     model = Logistic_Regression(X_train, y_train, X_test, y_test,X,y)
     plot_confusion_matrix(X_test, y_test, model,"Standard Scalar",axs,0)
@@ -69,7 +69,7 @@ def train_model(df):
     X_train, X_test = model_tuning.standardize_using_robust(X_train,X_test)
     print("Logistic Regression using robust accuracy:")
     model = Logistic_Regression(X_train, y_train, X_test, y_test,X,y)
-    # plot_confusion_matrix(X_test, y_test, model,"Robust Scalar", axs,1)
+    plot_confusion_matrix(X_test, y_test, model,"Robust Scalar", axs,1)
 
     X_train, X_test = model_tuning.standardize_using_minmax(X_train,X_test)
     print("Logistic Regression standardize using minmax accuracy:")
@@ -89,11 +89,12 @@ def k_nearest_algorithm(X_train, y_train, X_test, y_test,X,y):
     Converts all categorical data to numerical
     """   
     from sklearn.neighbors import KNeighborsClassifier
-    
+    # range = list(range(1, 31))
     neighbours = model_tuning.find_best_num_of_neighbours(X_train, y_train, X_test, y_test)
     # set n_neighbors=1 as 1 to see accuracy at 1 neighbour
     knn = KNeighborsClassifier(n_neighbors=neighbours)
     accuracy(X,y,X_train,y_train,X_test,y_test,knn)
+    # print(model_tuning.GridSearch(knn,X_train,y_train,X_test,y_test,range))
     return knn
 
 # Logistic Regression Algorithm 
