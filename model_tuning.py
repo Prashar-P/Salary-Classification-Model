@@ -14,14 +14,15 @@ from imblearn.under_sampling import RandomUnderSampler
 from collections import Counter
 from sklearn.datasets import make_classification
 from imblearn.over_sampling import SMOTE 
-import preprocessing
 
+import preprocessing
+import training
 
 # Scaling
 
 def standardize_using_scalar(X_train,X_test):
     """
-    Trains  data in order to make predictions based on the data provided.
+    Standardise data using standard scalar
     """
     standard_scaler = StandardScaler()
     X_train = standard_scaler.fit_transform(X_train)
@@ -30,7 +31,7 @@ def standardize_using_scalar(X_train,X_test):
 
 def standardize_using_robust(X_train,X_test):
     """
-    Trains  data in order to make predictions based on the data provided.
+    Standardise data using robust scalar
     """ 
     robust_scaler = RobustScaler()
     X_train = robust_scaler.fit_transform(X_train)
@@ -39,6 +40,9 @@ def standardize_using_robust(X_train,X_test):
     
 
 def standardize_using_minmax(X_train,X_test):
+    """
+    Standardise data using minmax scalar
+    """
     minmax_scaler = MinMaxScaler()
     X_train = minmax_scaler.fit_transform(X_train)
     X_test= minmax_scaler.transform(X_test)
@@ -47,7 +51,7 @@ def standardize_using_minmax(X_train,X_test):
 
 def standardize_using_normalizer(X_train,X_test):
     """
-    Trains  data in order to make predictions based on the data provided.
+    Standardise data using normalizer scalar
     """
     normalizer = Normalizer()
     X_train = normalizer.fit_transform(X_train)
@@ -58,7 +62,7 @@ def standardize_using_normalizer(X_train,X_test):
 
 def check_imbalance(df):
     """
-    Trains  data in order to make predictions based on the data provided.
+    Checks data imbalance by presenting it on a bar chart
     """
     sal_imbalance = df['salary'].value_counts().plot(kind='bar')
     sal_imbalance.set_title('Frequency of salary data \n salary: 0:<=50k , 1:>=50k')
@@ -67,7 +71,7 @@ def check_imbalance(df):
 
 def oversampling(X,y):
     """
-    Trains  data in order to make predictions based on the data provided.
+    Use oversamping to fix the imbalance in data
     """
     X, y = make_classification(n_samples=32561, n_features=15, n_informative=2,
                            weights= [10] )
@@ -80,7 +84,7 @@ def oversampling(X,y):
 
 def undersampling(X,y):
     """
-    Trains  data in order to make predictions based on the data provided.
+    Use undersampling to fix the imbalance in data
     """
     X, y = make_classification(n_samples=32561, n_features=15, n_informative=2,
                         weights=  [10] )
@@ -92,7 +96,8 @@ def undersampling(X,y):
 
 def fix_imbalanced_data_with_smote(X,y):
     """
-    Trains  data in order to make predictions based on the data provided.
+    Use Synthetic Minority Over-sampling Technique (SMOTE) to fix the 
+    imbalance in data
     """
     sm = SMOTE(random_state=42)
     X, y = sm.fit_resample(X, y)
@@ -100,22 +105,33 @@ def fix_imbalanced_data_with_smote(X,y):
     return X,y
 
 def GridSearch(model,X_train,y_train,X_test,y_test,params):
+    """
+    Performs hypertuning of params to find most optimal parameters to get the 
+    best accuracy for the chosen model
+    """
     grid=GridSearchCV(model,params,verbose=3)
     grid.fit(X_train,y_train)
     new_model = grid.best_estimator_
     new_model.fit(X_train,y_train)
     y_pred = new_model.predict(X_test)
-    cm = training.confusion_matrix(y_test, y_pred)
-    
-    cm_plt =  sns.heatmap(cm/np.sum(cm), fmt='.2%', annot=True, cmap='Blues')
-    cm_plt.set_title('Confusion Matrix using Grid Search' )
-    cm_plt.xaxis.set_ticklabels(['True','False'])
-    cm_plt.yaxis.set_ticklabels(['Negative','Posotive'])
 
+    print(grid.best_score_)
+    print(training.classification_report(y_test,y_pred))
+    
+    from sklearn.metrics import confusion_matrix
+    cm = confusion_matrix(y_test, y_pred)
+
+    ax = plt.subplot()
+
+    cm_plt =  sns.heatmap(cm/np.sum(cm), fmt='.2%', annot=True, cmap='Blues',ax=ax)
+    cm_plt.set_title('Confusion Matrix using ' + str(model))
+    cm_plt.xaxis.set_ticklabels(['Negative','Posotive'])
+    cm_plt.yaxis.set_ticklabels(['Negative','Posotive'])
+    plt.show()
 
 def find_best_num_of_neighbours(X_train, y_train, X_test, y_test):
     """
-    Trains  data in order to make predictions based on the data provided.
+    Return optimal number of neighbours for knn with the lowest error rate
     """
     error_rate = []
     for i in range(1,30):

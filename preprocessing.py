@@ -25,7 +25,7 @@ def data_preprocessing(df):
     - handling of outliers
     """
     print("PRE-PROCESSING")
-    # check_data(df)
+    #data_analysis(df)
     remove_spaces(df)
     feature_selection(df)
     remove_null_values(df)
@@ -33,8 +33,7 @@ def data_preprocessing(df):
     convert_categorical_to_numerical(df)
     # plt_data(df)
     handle_outliers(df)
-    # print(df.value_counts())
-    # print(df.head(30))
+    print(df.size)
 
 
 def train_data():
@@ -130,7 +129,7 @@ def plt_data(df):
         a = a + 1
     plt.tight_layout()
 
-        # sns.boxplot(data=df, y=col, x="salary").set_title("Outliers in the age category")
+    # sns.boxplot(data=df, y=col, x="salary").set_title("Outliers in the age category")
     sns.catplot(data=df, y="occupation", hue="salary", kind="count", palette="pastel")
     plt.figure(figsize=(15, 10))
     sns.heatmap(df.corr(), annot=True)

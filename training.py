@@ -23,13 +23,17 @@ import model_tuning
 def train_model(df):
     
     """
-    Converts all categorical data to numerical
+    train data model using KNN and Logistic Regression
+    Scalars, Confusion Matrix plotting and under/oversampling techiniques
+    to be used can be set in this function
     """
 
     X = df.iloc[:, :-1]
     y = df.iloc[:, -1]
 
-    #model_tuning.check_imbalance(df)
+    #SET UNDER/OVER/SMOTE SAMPLING HERE
+
+    # model_tuning.check_imbalance(df)
     # X, y = model_tuning.fix_imbalanced_data_with_smote(X,y)
     # X, y = model_tuning.oversampling(X,y)
     # X, y = model_tuning.undersampling(X,y)
@@ -38,29 +42,45 @@ def train_model(df):
         X, y, test_size=0.2, random_state=0
     )
 
-    # fig, axs = plt.subplots(figsize=(30,5),ncols=4)
-    # X_train, X_test = model_tuning.standardize_using_scalar(X_train,X_test)
-    # print("KNN standardize using scalar accuracy:")
-    # model = k_nearest_algorithm(X_train, y_train, X_test, y_test,X,y)
-    # plot_confusion_matrix(X_test, y_test, model,"Standard Scalar",axs,0)
+    # #LOGISTIC REGRESSION  & KNN WITH NO SCALARS
 
-    # X_train, X_test = model_tuning.standardize_using_robust(X_train,X_test)
-    # print("KNN standardize using robust accuracy:")
-    # model = k_nearest_algorithm(X_train, y_train, X_test, y_test,X,y)
-    # plot_confusion_matrix(X_test, y_test, model,"Robust Scalar", axs,1)
+    # fig, axs = plt.subplots(figsize=(30,5),ncols=2)
 
-    # X_train, X_test = model_tuning.standardize_using_minmax(X_train,X_test)
-    # print("KNN standardize using minmax accuracy:")
-    # model = k_nearest_algorithm(X_train, y_train, X_test, y_test,X,y)
-    # plot_confusion_matrix(X_test, y_test, model,"MinMax Scalar",axs,2)
+    # model = Logistic_Regression(X_train, y_train, X_test, y_test,X,y)
+    # plot_confusion_matrix(X_test, y_test, model,"Logistic Regression", axs,0)
 
-    # X_train, X_test = model_tuning.standardize_using_normalizer(X_train,X_test)
-    # print("KNN standardize using normalizer accuracy:")
+  
     # model = k_nearest_algorithm(X_train, y_train, X_test, y_test,X,y)
-    # plot_confusion_matrix(X_test, y_test, model,"Normalizer", axs,3)
+    # plot_confusion_matrix(X_test, y_test, model,"KNN", axs,1)
+
+    #KNN REGRESSION WITH SCALARS
 
     fig, axs = plt.subplots(figsize=(30,5),ncols=4)
     
+    X_train, X_test = model_tuning.standardize_using_scalar(X_train,X_test)
+    print("KNN standardize using scalar accuracy:")
+    model = k_nearest_algorithm(X_train, y_train, X_test, y_test,X,y)
+    plot_confusion_matrix(X_test, y_test, model,"Standard Scalar",axs,0)
+
+    X_train, X_test = model_tuning.standardize_using_robust(X_train,X_test)
+    print("KNN standardize using robust accuracy:")
+    model = k_nearest_algorithm(X_train, y_train, X_test, y_test,X,y)
+    plot_confusion_matrix(X_test, y_test, model,"Robust Scalar", axs,1)
+
+    X_train, X_test = model_tuning.standardize_using_minmax(X_train,X_test)
+    print("KNN standardize using minmax accuracy:")
+    model = k_nearest_algorithm(X_train, y_train, X_test, y_test,X,y)
+    plot_confusion_matrix(X_test, y_test, model,"MinMax Scalar",axs,2)
+
+    X_train, X_test = model_tuning.standardize_using_normalizer(X_train,X_test)
+    print("KNN standardize using normalizer accuracy:")
+    model = k_nearest_algorithm(X_train, y_train, X_test, y_test,X,y)
+    plot_confusion_matrix(X_test, y_test, model,"Normalizer", axs,3)
+
+     #LOGISTIC REGRESSION WITH SCALARS
+
+    fig, axs = plt.subplots(figsize=(30,5),ncols=4)
+
     X_train, X_test = model_tuning.standardize_using_scalar(X_train,X_test)
     print("Logistic Regression using scalar accuracy:")
     model = Logistic_Regression(X_train, y_train, X_test, y_test,X,y)
@@ -86,33 +106,50 @@ def train_model(df):
 
 def k_nearest_algorithm(X_train, y_train, X_test, y_test,X,y):
     """
-    Converts all categorical data to numerical
+    Classify data using KNN algorithm
+    Note: GridSearch can be used here
     """   
+    
     from sklearn.neighbors import KNeighborsClassifier
-    # range = list(range(1, 31))
-    neighbours = model_tuning.find_best_num_of_neighbours(X_train, y_train, X_test, y_test)
+    # neighbours = model_tuning.find_best_num_of_neighbours(X_train, y_train, X_test, y_test)
+    params  = { 
+        'n_neighbors' : range(1,30),
+        'weights' : ['uniform'],
+        'metric' : ['euclidean']
+        }
     # set n_neighbors=1 as 1 to see accuracy at 1 neighbour
-    knn = KNeighborsClassifier(n_neighbors=neighbours)
+    knn = KNeighborsClassifier(n_neighbors=1)
     accuracy(X,y,X_train,y_train,X_test,y_test,knn)
-    # print(model_tuning.GridSearch(knn,X_train,y_train,X_test,y_test,range))
+    ##Set when using grid search:
+    # knn = KNeighborsClassifier()
+    # model_tuning.GridSearch(knn,X_train,y_train,X_test,y_test,params)
+    
     return knn
 
 # Logistic Regression Algorithm 
 
 def Logistic_Regression(X_train, y_train, X_test, y_test,X,y):
     """
-    Converts all categorical data to numerical
-    """   
+    Classify data using Logistic Regression algorithm
+    Note GridSearch can be used here
+    """     
     from sklearn.linear_model import LogisticRegression
+    params  = {
+        "solver": ["liblinear"],
+        'penalty' : ['l1', 'l2'],
+        'C' : [0.001, 0.01, 0.1, 1, 10, 100, 1000]
+    }
     logistic = LogisticRegression(max_iter=10000)
     accuracy(X,y,X_train,y_train,X_test,y_test,logistic)
+    ##Set when using grid search:
+    # model_tuning.GridSearch(logistic,X_train,y_train,X_test,y_test,params)
+    
     return logistic
 
 def accuracy(X,y,X_train,y_train,X_test,y_test,model):
     """
-    Converts all categorical data to numerical
-    """   
-    
+    Print accuracy scores for test and train data and produce classification result
+    """  
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
     target = ["<=50K",">=50k"]
@@ -128,7 +165,8 @@ def accuracy(X,y,X_train,y_train,X_test,y_test,model):
 
 def plot_confusion_matrix(X_test, y_test, model, scalar, axs,axis):
     """
-    Converts all categorical data to numerical
+    Plot accuracy onto a confusion matrix
+    See:https://medium.com/@dtuk81/confusion-matrix-visualization-fc31e3f30fea
     """
     from sklearn.metrics import confusion_matrix
     from sklearn.metrics import plot_confusion_matrix
@@ -136,16 +174,21 @@ def plot_confusion_matrix(X_test, y_test, model, scalar, axs,axis):
     y_pred = model.predict(X_test)
     cm = confusion_matrix(y_test, y_pred)
 
-    cm_plt =  sns.heatmap(cm/np.sum(cm), fmt='.2%', annot=True, cmap='Blues',ax=axs[axis])
+    group_names = ['True Neg','False Pos','False Neg','True Pos']
+    group_percentages = ['{0:.2%}'.format(value) for value in
+                     cm.flatten()/np.sum(cm)]
+    labels = [f'{v1}\n{v2}' for v1, v2 in
+          zip(group_names,group_percentages)]
+    labels = np.asarray(labels).reshape(2,2)
+    cm_plt =  sns.heatmap(cm, fmt='', annot=labels, cmap='Blues',ax=axs[axis])
     cm_plt.set_title('Confusion Matrix using ' + scalar)
-    cm_plt.xaxis.set_ticklabels(['True','False'])
-    cm_plt.yaxis.set_ticklabels(['Negative','Posotive'])
+    
 
 # Cross-Validation
 
 def cross_validation(model,X,y):
     """
-    Trains  data in order to make predictions based on the data provided.
+    Apply cross-validation to classification
     """
     scores = cross_val_score(model,X, y, cv=5, scoring="accuracy")
     print("Scores: ", scores)
