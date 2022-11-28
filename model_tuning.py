@@ -123,10 +123,15 @@ def GridSearch(model,X_train,y_train,X_test,y_test,params):
 
     ax = plt.subplot()
 
-    cm_plt =  sns.heatmap(cm/np.sum(cm), fmt='.2%', annot=True, cmap='Blues',ax=ax)
-    cm_plt.set_title('Confusion Matrix using ' + str(model))
-    cm_plt.xaxis.set_ticklabels(['Negative','Posotive'])
-    cm_plt.yaxis.set_ticklabels(['Negative','Posotive'])
+    group_names = ['True Neg','False Pos','False Neg','True Pos']
+    group_percentages = ['{0:.2%}'.format(value) for value in
+                     cm.flatten()/np.sum(cm)]
+    labels = [f'{v1}\n{v2}' for v1, v2 in
+          zip(group_names,group_percentages)]
+    labels = np.asarray(labels).reshape(2,2)
+    cm_plt =  sns.heatmap(cm, fmt='', annot=labels, cmap='Blues')
+    cm_plt.set_title('Confusion Matrix using GridSearch')
+    
     plt.show()
 
 def find_best_num_of_neighbours(X_train, y_train, X_test, y_test):
