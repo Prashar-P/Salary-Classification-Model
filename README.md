@@ -39,6 +39,8 @@ The Salary Prediction dataset found on Kaggle presents data on 32561 individuals
 VIDEO PRESENTATION:
 https://livecoventryac-my.sharepoint.com/:v:/g/personal/prasharp_uni_coventry_ac_uk/EdatHQe4geVJq5xzPoCzykIBDupdo0p-d3splO3zMtwy8Q?e=36hRDo
 
+SALARY DATASET:
+https://www.kaggle.com/datasets/ayessa/salary-prediction-classification
 
 ### Built With
 
