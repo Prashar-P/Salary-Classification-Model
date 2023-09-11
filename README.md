@@ -36,9 +36,6 @@
 
 The Salary Prediction dataset found on Kaggle presents data on 32561 individuals, information about their background, age, class, occupation, and salary shown as above or below $50,000. The task to classify the following dataset aims to predict an individual’s salary using python and python libraries to assist. 
 
-VIDEO PRESENTATION:
-https://livecoventryac-my.sharepoint.com/:v:/g/personal/prasharp_uni_coventry_ac_uk/EdatHQe4geVJq5xzPoCzykIBDupdo0p-d3splO3zMtwy8Q?e=36hRDo
-
 SALARY DATASET:
 https://www.kaggle.com/datasets/ayessa/salary-prediction-classification
 
